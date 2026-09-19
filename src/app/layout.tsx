@@ -7,6 +7,7 @@ import { StoreProvider } from "@/context/StoreProvider";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { CartDrawer } from "@/components/CartDrawer";
+import { ScrollToTop } from "@/components/ScrollToTop";
 
 export const metadata: Metadata = {
   title: {
@@ -32,6 +33,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <body>
         <StoreProvider>
+          <ScrollToTop />
           <div className="flex min-h-screen flex-col">
             <Header />
             <main className="flex-1">{children}</main>

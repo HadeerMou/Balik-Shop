@@ -25,10 +25,23 @@ export function Header() {
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
 
+  // Note: this only fires on a pathname change. Tapping a category from the
+  // drawer goes /shop?category=a -> /shop?category=b, same pathname, so each
+  // drawer link closes the menu itself via onClick. Reading useSearchParams
+  // here instead would push the whole header behind a Suspense boundary and
+  // drop it out of the prerendered HTML.
   useEffect(() => {
     setMenuOpen(false);
     setSearchOpen(false);
   }, [pathname]);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [menuOpen]);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
@@ -177,6 +190,7 @@ export function Header() {
             <nav className="flex-1 overflow-y-auto px-5 py-6">
               <Link
                 href="/shop"
+                onClick={() => setMenuOpen(false)}
                 className="mb-2 block rounded-2xl bg-navy-700 px-4 py-3 font-display text-lg font-semibold text-butter-200"
               >
                 Shop everything
@@ -185,6 +199,7 @@ export function Header() {
                 <Link
                   key={c.slug}
                   href={`/shop?category=${c.slug}`}
+                  onClick={() => setMenuOpen(false)}
                   className="flex items-center justify-between border-b-2 border-navy-100 px-1 py-3 font-display text-lg font-semibold text-navy-700"
                 >
                   {c.name}

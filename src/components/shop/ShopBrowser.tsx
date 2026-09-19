@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { CATEGORIES, PRODUCTS, SIZE_ORDER, type CategorySlug } from "@/lib/catalog";
 import { useStore } from "@/context/StoreProvider";
 import { ProductGrid } from "@/components/ProductGrid";
@@ -47,6 +47,18 @@ export function ShopBrowser() {
   const [query, setQuery] = useState(urlQuery);
   const [maxPrice, setMaxPrice] = useState(60); // USD base
   const [sheetOpen, setSheetOpen] = useState(false);
+
+  // Going from /shop?category=bags to /shop?category=shoes keeps this component
+  // mounted, so the state above (seeded once on mount) would stay on the old
+  // category while the URL changed underneath it. Re-read the params whenever
+  // they change so every category link works, not just the first one.
+  useEffect(() => {
+    setCategories(urlCategory ? [urlCategory] : []);
+    setSort(urlSort);
+    setSaleOnly(urlSort === "sale");
+    setQuery(urlQuery);
+    setSheetOpen(false);
+  }, [urlCategory, urlSort, urlQuery]);
 
   const availableSizes = useMemo(() => {
     const set = new Set<string>();
